@@ -2,6 +2,7 @@
 #tool "nuget:https://www.nuget.org/api/v2?package=coveralls.io&version=1.4.2"
 #addin "nuget:https://www.nuget.org/api/v2?package=Cake.Coveralls&version=0.8.0"
 #addin "nuget:https://www.nuget.org/api/v2?package=Cake.Incubator&version=2.0.1"
+#addin "nuget:https://www.nuget.org/api/v2?package=Cake.DependenciesAnalyser&version=2.0.0"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -119,6 +120,17 @@ Task("Test")
 // Validations
 ///////////////////////////////////////////////////////////////////////////////
 
+Task("Analyse-Dependencies")
+    .Description("Runs the Dependencies Analyser on the solution.")
+    .Does(() =>
+{
+    var settings = new DependenciesAnalyserSettings
+    {
+        Folder = "./"
+    };
+    AnalyseDependencies(settings);
+});
+
 Task("DupFinder")
     .Description("Find duplicates in the code")
     .Does(() =>
@@ -147,6 +159,7 @@ Task("InspectCode")
 
 Task("Validate")
     .Description("Validate code quality using Resharper CLI. tools.")
+    .IsDependentOn("Analyse-Dependencies")
     .IsDependentOn("DupFinder")
     .IsDependentOn("InspectCode");
 
